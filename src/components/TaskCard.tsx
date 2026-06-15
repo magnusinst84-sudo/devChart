@@ -1,11 +1,12 @@
 type TaskCardProps = {
+    _id: string;
     title: string;
     description: string;
     priority: string;
-    completion: boolean;
+    status: string;
 };
 
-const TaskCard = ({ title, description, priority, completion }: TaskCardProps) => {
+const TaskCard = ({ title, description, priority }: TaskCardProps) => {
     const bgClass =
         priority.toLowerCase() === "high"
             ? "bg-red-400"
@@ -14,7 +15,7 @@ const TaskCard = ({ title, description, priority, completion }: TaskCardProps) =
             : "bg-green-400";
 
     return (
-        <div className={`flex h-auto w-64 self-start flex-col rounded-2xl border-2 border-black overflow-hidden shrink-0 ${bgClass}`}>
+        <div className={`flex h-auto w-full self-start flex-col rounded-2xl border-2 border-black overflow-hidden shrink-0 ${bgClass}`}>
             <div className="bg-black p-3 text-xl font-bold text-teal-200">
                 <h2>{title}</h2>
             </div>
