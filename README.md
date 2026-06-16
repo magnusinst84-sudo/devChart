@@ -1,36 +1,95 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# devChart
+
+A neobrutalist Kanban board built for dev teams. Track tasks, collaborate, and ship faster.
+
+---
+
+## Tech Stack
+
+- **Frontend:** Next.js 14 (App Router), React, TypeScript, Tailwind CSS
+- **Backend:** Next.js API Routes, Mongoose
+- **Database:** MongoDB Atlas
+- **Auth:** Firebase Authentication (Email/Password)
+- **Drag & Drop:** @hello-pangea/dnd
+
+---
+
+## Features
+
+- **5-Stage Kanban Board** — To Do → Up Next → In Progress → In Review → Done
+- **Drag & Drop Persistence** — drag cards between columns, status saved instantly to MongoDB
+- **Task Comments** — add comments with author name, persisted per task
+- **Activity Log** — every status change automatically recorded with timestamp
+- **Task Assignment** — assign tasks to team members from a dropdown
+- **Firebase Auth** — email/password signup and login, protected routes
+- **Neobrutalist UI** — thick borders, hard offset shadows, high-contrast color blocks
+
+---
 
 ## Getting Started
 
-First, run the development server:
+### Prerequisites
+- Node.js 18+
+- MongoDB Atlas account
+- Firebase project with Email/Password auth enabled
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+### Setup
+
+1. Clone the repo
+   ```bash
+   git clone <repo-url>
+   cd devChart
+   ```
+
+2. Install dependencies
+   ```bash
+   npm install
+   ```
+
+3. Create a `.env.local` file in the project root:
+   ```env
+   MONGODB_URI=your_mongodb_connection_string
+   NEXT_PUBLIC_FIREBASE_API_KEY=your_firebase_api_key
+   NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=your_firebase_auth_domain
+   NEXT_PUBLIC_FIREBASE_PROJECT_ID=your_firebase_project_id
+   NEXT_PUBLIC_FIREBASE_APP_ID=your_firebase_app_id
+   ```
+
+4. Run the development server
+   ```bash
+   npm run dev
+   ```
+
+5. Open http://localhost:3000
+
+---
+
+## Project Structure
+
+```
+src/
+├── app/
+│   ├── api/tasks/          # GET, POST tasks
+│   ├── api/tasks/[id]/     # PATCH, DELETE task + GET single
+│   ├── api/tasks/[id]/comments/  # POST comment
+│   ├── api/members/        # GET, POST members
+│   ├── auth/               # Login/signup page
+│   ├── dashboard/          # Kanban board
+│   ├── create-task/        # Task creation form
+│   └── page.tsx            # Landing page
+├── components/
+│   ├── TaskCard.tsx        # Card + modal (comments + activity log)
+│   └── Navbar.tsx
+├── models/
+│   ├── Tasks.ts            # Task schema
+│   └── Member.ts           # Member schema
+├── context/
+│   └── AuthContext.tsx     # Firebase auth context
+└── lib/
+    ├── mongodb.ts          # Mongoose connection
+    └── firebase.ts         # Firebase init
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+---
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.

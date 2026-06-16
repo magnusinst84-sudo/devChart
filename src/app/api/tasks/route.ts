@@ -25,8 +25,9 @@ export async function POST(request: Request){
         await connectDB();
 
         const body = await request.json();
+        const { title, description, priority, status, assignee } = body;
 
-        const task = await Task.create(body);
+        const task = await Task.create({ title, description, priority, status, assignee });
 
         return Response.json(task,{status: 201});
     }catch(error){

@@ -9,8 +9,10 @@ import {
     Draggable,
     DropResult,
 } from "@hello-pangea/dnd";
+import { useAuth } from "@/context/AuthContext";
+import { useRouter } from "next/navigation";
 
-type Status = "todo" | "in-progress" | "done";
+type Status = "todo" | "up-next" | "in-progress" | "in-review" | "done";
 
 type Task = {
     _id: string;
@@ -18,16 +20,27 @@ type Task = {
     description: string;
     priority: string;
     status: Status;
+    assignee?: { uid: string; displayName: string };
 };
 
-const COLUMNS: { id: Status; label: string }[] = [
-    { id: "todo", label: "To Do" },
-    { id: "in-progress", label: "In Progress" },
-    { id: "done", label: "Done" },
+const COLUMNS: { id: Status; label: string, color: string }[] = [
+    { id: "todo", label: "To Do", color: "bg-[#dbeafe]" },
+    { id: "up-next", label: "Up Next", color: "bg-[#fef9c3]" },
+    { id: "in-progress", label: "In Progress", color: "bg-[#fce7f3]" },
+    { id: "in-review", label: "In Review", color: "bg-[#ede9fe]" },
+    { id: "done", label: "Done", color: "bg-[#dcfce7]" },
 ];
 
 export default function Dashboard() {
+    const { user, loading: authLoading } = useAuth();
+    const router = useRouter();
     const [tasks, setTasks] = useState<Task[]>([]);
+
+    useEffect(() => {
+        if (!authLoading && !user) {
+            router.push("/auth");
+        }
+    }, [authLoading, user, router]);
 
     async function fetchTasks() {
         const response = await fetch("/api/tasks");
@@ -36,13 +49,14 @@ export default function Dashboard() {
     }
 
     useEffect(() => {
-        fetchTasks();
-    }, []);
+        if (user) {
+            fetchTasks();
+        }
+    }, [user]);
 
     async function handleDragEnd(result: DropResult) {
         const { draggableId, destination } = result;
 
-        // Dropped outside any column or in the same column
         if (!destination) return;
 
         const newStatus = destination.droppableId as Status;
@@ -50,7 +64,6 @@ export default function Dashboard() {
         const task = tasks.find((t) => t._id === draggableId);
         if (!task || task.status === newStatus) return;
 
-        // Optimistic update
         setTasks((prev) =>
             prev.map((t) =>
                 t._id === draggableId ? { ...t, status: newStatus } : t
@@ -65,7 +78,6 @@ export default function Dashboard() {
             });
 
             if (!res.ok) {
-                // Roll back on failure
                 setTasks((prev) =>
                     prev.map((t) =>
                         t._id === draggableId ? { ...t, status: task.status } : t
@@ -73,7 +85,6 @@ export default function Dashboard() {
                 );
             }
         } catch {
-            // Roll back on network error
             setTasks((prev) =>
                 prev.map((t) =>
                     t._id === draggableId ? { ...t, status: task.status } : t
@@ -82,14 +93,24 @@ export default function Dashboard() {
         }
     }
 
+    if (authLoading) {
+        return (
+            <div className="min-h-screen bg-[#f5f5f5] flex items-center justify-center">
+                <p className="text-black font-black text-2xl tracking-tighter border-4 border-black px-6 py-3 bg-white shadow-[6px_6px_0px_#000]">LOADING…</p>
+            </div>
+        );
+    }
+
+    if (!user) return null;
+
     return (
-        <>
+        <div className="min-h-screen bg-[#f5f5f5] pb-10">
             <Navbar />
             <DragDropContext onDragEnd={handleDragEnd}>
-                <div className="flex gap-4 m-4 items-start">
+                <div className="flex gap-6 m-6 items-start overflow-x-auto pb-6 px-2">
                     {COLUMNS.map((col) => (
-                        <div key={col.id} className="flex-1 min-w-0">
-                            <h2 className="text-xl font-bold mb-3 text-teal-200">
+                        <div key={col.id} className="flex-1 min-w-[300px]">
+                            <h2 className="text-2xl font-black mb-4 text-black border-b-4 border-black pb-2">
                                 {col.label}
                             </h2>
                             <Droppable droppableId={col.id}>
@@ -97,10 +118,8 @@ export default function Dashboard() {
                                     <div
                                         ref={provided.innerRef}
                                         {...provided.droppableProps}
-                                        className={`min-h-32 rounded-2xl p-3 flex flex-col gap-3 transition-colors ${
-                                            snapshot.isDraggingOver
-                                                ? "bg-teal-900/40"
-                                                : "bg-black/20"
+                                        className={`min-h-[200px] border-4 border-black shadow-[6px_6px_0px_#000] p-4 flex flex-col gap-4 transition-colors ${col.color} ${
+                                            snapshot.isDraggingOver ? "opacity-90" : ""
                                         }`}
                                     >
                                         {tasks
@@ -123,6 +142,7 @@ export default function Dashboard() {
                                                                 description={task.description}
                                                                 priority={task.priority}
                                                                 status={task.status}
+                                                                assignee={task.assignee}
                                                             />
                                                         </div>
                                                     )}
@@ -136,6 +156,6 @@ export default function Dashboard() {
                     ))}
                 </div>
             </DragDropContext>
-        </>
+        </div>
     );
 }
