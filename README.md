@@ -2,6 +2,9 @@
 
 A neobrutalist Kanban board built for dev teams. Track tasks, collaborate, and ship faster.
 
+## Live Demo
+https://dev-chart-zeta.vercel.app
+
 ---
 
 ## Tech Stack
@@ -62,6 +65,13 @@ A neobrutalist Kanban board built for dev teams. Track tasks, collaborate, and s
 
 5. Open http://localhost:3000
 
+### Deployment
+
+- Push code to GitHub
+- Import repo on vercel.com
+- Add all environment variables from `.env.local`
+- Click Deploy
+
 ---
 
 ## Project Structure
@@ -92,4 +102,9 @@ src/
 
 ---
 
+## Known Limitations
 
+- Route protection is component-level, not middleware-level — brief flash before redirect on direct URL access
+- No real-time updates — board requires manual refresh to see changes made by other users
+- Firebase and MongoDB are not natively linked — deleting a Firebase user leaves orphaned data in MongoDB
+- No pagination on tasks — performance may degrade with large numbers of tasks
