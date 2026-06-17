@@ -28,6 +28,17 @@ https://dev-chart-zeta.vercel.app
 - **Neobrutalist UI** — thick borders, hard offset shadows, high-contrast color blocks
 
 ---
+## Screenshots
+
+### Landing Page
+![Landing Page](./screenshots/landing-page-1.png)
+![Landing Page](./screenshots/landing-page-2.png)
+
+### Authentication
+![Auth Page](./screenshots/auth.png)
+
+### Dashboard & Task Detail
+![Tasks](./screenshots/tasks.png)
 
 ## Getting Started
 
