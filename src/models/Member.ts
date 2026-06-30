@@ -13,6 +13,11 @@ const MemberSchema = new mongoose.Schema({
         type: String,
         required: true,
     },
+    rooms: {
+        type: [mongoose.Schema.Types.ObjectId],
+        ref: "Room",
+        default: [],
+    }
 });
 
 // Delete cached model so Next.js hot-reload always picks up the latest schema.

@@ -41,10 +41,10 @@ export default function AuthPage() {
                     }),
                 });
 
-                router.push("/dashboard");
+                router.push("/rooms");
             } else {
                 await signInWithEmailAndPassword(auth, email, password);
-                router.push("/dashboard");
+                router.push("/rooms");
             }
         } catch (err: unknown) {
             if (err instanceof Error) {

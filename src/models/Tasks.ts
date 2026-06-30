@@ -35,6 +35,11 @@ const ActivityLogSchema = new mongoose.Schema({
 });
 
 const TaskSchema = new mongoose.Schema({
+    roomId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Room",
+        required: true,
+    },
     title: {
         type: String,
         required: true,

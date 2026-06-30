@@ -1,8 +1,8 @@
 "use client";
 
 import Navbar from "@/components/Navbar";
-import React, { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
+import React, { useState, useEffect, Suspense } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
 
 type Member = {
@@ -12,8 +12,10 @@ type Member = {
     email: string;
 };
 
-const CreateTask = () => {
+const CreateTaskContent = () => {
     const router = useRouter();
+    const searchParams = useSearchParams();
+    const roomId = searchParams.get("roomId");
     const { user, loading: authLoading } = useAuth();
 
     const [title, setTitle] = useState("");
@@ -62,6 +64,7 @@ const CreateTask = () => {
                     description,
                     priority,
                     status: "todo",
+                    roomId,
                     ...(assignee && { assignee }),
                 }),
             });
@@ -70,7 +73,11 @@ const CreateTask = () => {
                 throw new Error("Failed to create task");
             }
 
-            router.push("/dashboard");
+            if (roomId) {
+                router.push(`/rooms/${roomId}`);
+            } else {
+                router.push("/rooms");
+            }
         } catch (error) {
             console.error("Error creating task:", error);
             alert("Failed to create task.");
@@ -165,4 +172,10 @@ const CreateTask = () => {
     );
 };
 
-export default CreateTask;
+export default function CreateTask() {
+    return (
+        <Suspense fallback={<div className="min-h-screen bg-[#f5f5f5] flex items-center justify-center">Loading...</div>}>
+            <CreateTaskContent />
+        </Suspense>
+    );
+}

@@ -10,7 +10,8 @@ import {
     DropResult,
 } from "@hello-pangea/dnd";
 import { useAuth } from "@/context/AuthContext";
-import { useRouter } from "next/navigation";
+import { useRouter, useParams } from "next/navigation";
+import Link from "next/link";
 
 type Status = "todo" | "up-next" | "in-progress" | "in-review" | "done";
 
@@ -31,9 +32,12 @@ const COLUMNS: { id: Status; label: string, color: string }[] = [
     { id: "done", label: "Done", color: "bg-[#dcfce7]" },
 ];
 
-export default function Dashboard() {
+export default function RoomBoard() {
     const { user, loading: authLoading } = useAuth();
     const router = useRouter();
+    const params = useParams();
+    const roomId = params.roomId as string;
+    
     const [tasks, setTasks] = useState<Task[]>([]);
 
     useEffect(() => {
@@ -43,16 +47,17 @@ export default function Dashboard() {
     }, [authLoading, user, router]);
 
     async function fetchTasks() {
-        const response = await fetch("/api/tasks");
+        if (!roomId) return;
+        const response = await fetch(`/api/tasks?roomId=${roomId}`);
         const data = await response.json();
         setTasks(data);
     }
 
     useEffect(() => {
-        if (user) {
+        if (user && roomId) {
             fetchTasks();
         }
-    }, [user]);
+    }, [user, roomId]);
 
     async function handleDragEnd(result: DropResult) {
         const { draggableId, destination } = result;
@@ -106,6 +111,20 @@ export default function Dashboard() {
     return (
         <div className="min-h-screen bg-[#f5f5f5] pb-10">
             <Navbar />
+            
+            <div className="m-6 flex justify-between items-center">
+                <Link href="/rooms">
+                    <button className="bg-white border-4 border-black px-4 py-2 font-black uppercase shadow-[4px_4px_0px_#000] hover:translate-y-[2px] hover:translate-x-[2px] hover:shadow-[2px_2px_0px_#000] transition-all">
+                        ← Back to Rooms
+                    </button>
+                </Link>
+                <Link href={`/create-task?roomId=${roomId}`}>
+                    <button className="bg-[#bbf7d0] border-4 border-black px-6 py-2 font-black uppercase shadow-[4px_4px_0px_#000] hover:translate-y-[2px] hover:translate-x-[2px] hover:shadow-[2px_2px_0px_#000] transition-all text-xl">
+                        + New Task
+                    </button>
+                </Link>
+            </div>
+
             <DragDropContext onDragEnd={handleDragEnd}>
                 <div className="flex gap-6 m-6 items-start overflow-x-auto pb-6 px-2">
                     {COLUMNS.map((col) => (
