@@ -19,6 +19,7 @@ https://dev-chart-zeta.vercel.app
 
 ## Features
 
+- **Rooms / Teams Feature** — organize tasks into isolated rooms guarded by entry keys. Join multiple rooms to manage different projects.
 - **5-Stage Kanban Board** — To Do → Up Next → In Progress → In Review → Done
 - **Drag & Drop Persistence** — drag cards between columns, status saved instantly to MongoDB
 - **Task Comments** — add comments with author name, persisted per task
@@ -90,18 +91,22 @@ https://dev-chart-zeta.vercel.app
 ```
 src/
 ├── app/
-│   ├── api/tasks/          # GET, POST tasks
+│   ├── api/rooms/          # GET, POST rooms
+│   ├── api/rooms/join/     # POST join room
+│   ├── api/tasks/          # GET, POST tasks (scoped by roomId)
 │   ├── api/tasks/[id]/     # PATCH, DELETE task + GET single
 │   ├── api/tasks/[id]/comments/  # POST comment
 │   ├── api/members/        # GET, POST members
 │   ├── auth/               # Login/signup page
-│   ├── dashboard/          # Kanban board
+│   ├── rooms/              # Rooms Hub dashboard
+│   ├── rooms/[roomId]/     # Dynamic Kanban board for a specific room
 │   ├── create-task/        # Task creation form
 │   └── page.tsx            # Landing page
 ├── components/
 │   ├── TaskCard.tsx        # Card + modal (comments + activity log)
 │   └── Navbar.tsx
 ├── models/
+│   ├── Room.ts             # Room schema
 │   ├── Tasks.ts            # Task schema
 │   └── Member.ts           # Member schema
 ├── context/
